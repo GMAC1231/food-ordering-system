@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neon Food Express</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+    }
+    .combo-card, .dessert-card {
+      border-radius: 16px;
+      padding: 20px;
+      font-weight: 500;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    body.day-mode .combo-card {
+      background: #fff8e1;
+      border: 2px solid #f39c12;
+      color: #a65b00;
+      box-shadow: 0 0 10px rgba(243, 156, 18, 0.2);
+    }
+    body.day-mode .combo-card:hover {
+      box-shadow: 0 0 25px #f39c12, 0 0 40px #f39c12;
+    }
+    body.day-mode .dessert-card {
+      background: #fff0f5;
+      border: 2px solid #ff69b4;
+      color: #c2185b;
+      box-shadow: 0 0 10px rgba(255, 105, 180, 0.2);
+    }
+    body.day-mode .dessert-card:hover {
+      box-shadow: 0 0 25px #ff69b4, 0 0 40px #ff69b4;
+    }
+    body.day-mode .dessert-card p {
+      color: #ff8fb2;
+      text-shadow: 0 0 2px #ff69b4;
+    }
+    body.night-mode .combo-card {
+      background: #1c1c1c;
+      border: 2px solid #ff9800;
+      color: #ff9800;
+      box-shadow: 0 0 15px #ff9800;
+    }
+    body.night-mode .combo-card:hover {
+      box-shadow: 0 0 25px #ff9800, 0 0 40px #ff9800;
+    }
+    body.night-mode .combo-card h2 {
+      text-shadow: 0 0 5px #ff9800;
+    }
+    body.night-mode .combo-card p {
+      color: #ffcc80;
+      text-shadow: 0 0 2px #ff9800;
+    }
+    body.night-mode .dessert-card {
+      background: #2b1f27;
+      border: 2px solid #ff69b4;
+      color: #ffb6c1;
+      box-shadow: 0 0 15px #ff69b4;
+    }
+    body.night-mode .dessert-card:hover {
+      box-shadow: 0 0 25px #ff69b4, 0 0 40px #ff69b4;
+    }
+    body.night-mode .dessert-card h2 {
+      text-shadow: 0 0 5px #ff69b4;
+    }
+    body.night-mode .dessert-card p {
+      color: #ff8fb2;
+      text-shadow: 0 0 2px #ff69b4;
+    }
+    .tab-buttons {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .tab-buttons button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background-color: #ff9800;
+      color: white;
+    }
+    .tab-buttons button:hover {
+      background-color: #e68900;
+    }
+    .order-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .order-controls button {
+      background-color: #222;
+      color: #ff9800;
+      border: 1px solid #ff9800;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+    .order-controls button:hover {
+      box-shadow: 0 0 8px #ff9800;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-link a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="day-mode">
+
+<header class="sticky-header">
+  <div class="header-title">Neon Food Express</div>
+  <div class="theme-toggle">
+    <label class="switch">
+      <input type="checkbox" id="toggle-theme" />
+      <span class="slider round"></span>
+    </label>
+  </div>
+</header>
+
+<main class="pamphlet-widget">
+  <h1 class="neon-title">Food Ordering</h1>
+
+  <div class="back-link">
+    {% if user_logged_in %}
+      👋 Welcome, <strong>{{ username }}</strong> | <a href="/logout">Logout</a>
+    {% else %}
+      <a href="/login">🔐 Login</a> | <a href="/signup">📝 Register</a>
+    {% endif %}
+  </div>
+
+  <div class="tab-buttons">
+    <button onclick="showPage('page1')">🍔 Regular & Sweet Treats</button>
+    <button onclick="showPage('page2')">🔥 Combos & Dessert Combos</button>
+  </div>
+
+  <div id="page1">
+    <h2 style="color:#ff9800;">🍔 Regular Items</h2>
+    {% for item, price, desc, emoji in food_items %}
+    <section class="combo-card">
+      <h2>{{ emoji }} {{ item }}</h2>
+      <p>{{ desc }}</p>
+      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
+      <div class="order-controls">
+        <button onclick="decrementQty('{{ item }}')">➖</button>
+        <span id="qty-{{ item }}">0</span>
+        <button onclick="incrementQty('{{ item }}')">➕</button>
+      </div>
+    </section>
+    {% endfor %}
+
+    <h2 style="color:#d81b60;">🍰 Sweet Treats</h2>
+    {% for item, price, desc, emoji in dessert_items %}
+    <section class="dessert-card">
+      <h2>{{ emoji }} {{ item }}</h2>
+      <p>{{ desc }}</p>
+      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
+      <div class="order-controls">
+        <button onclick="decrementQty('{{ item }}')">➖</button>
+        <span id="qty-{{ item }}">0</span>
+        <button onclick="incrementQty('{{ item }}')">➕</button>
+      </div>
+    </section>
+    {% endfor %}
+  </div>
+
+  <div id="page2" style="display:none;">
+    <h2 style="color:#f39c12;">🔥 Meal Combos</h2>
+    {% for item, price, desc, emoji in combo_items %}
+    <section class="combo-card">
+      <h2>{{ emoji }} {{ item }}</h2>
+      <p>{{ desc }}</p>
+      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
+      <div class="order-controls">
+        <button onclick="decrementQty('{{ item }}')">➖</button>
+        <span id="qty-{{ item }}">0</span>
+        <button onclick="incrementQty('{{ item }}')">➕</button>
+      </div>
+    </section>
+    {% endfor %}
+
+    <h2 style="color:#c2185b;">🍨 Dessert Combos</h2>
+    {% for item, price, desc, emoji in dessert_combos %}
+    <section class="dessert-card">
+      <h2>{{ emoji }} {{ item }}</h2>
+      <p>{{ desc }}</p>
+      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
+      <div class="order-controls">
+        <button onclick="decrementQty('{{ item }}')">➖</button>
+        <span id="qty-{{ item }}">0</span>
+        <button onclick="incrementQty('{{ item }}')">➕</button>
+      </div>
+    </section>
+    {% endfor %}
+  </div>
+
+  <div style="text-align:center; margin-top: 30px;">
+    <button onclick="placeAllOrders()" style="padding: 12px 24px; font-size: 18px; border-radius: 10px; background-color: #28a745; color: white; border: none; cursor: pointer;">
+      ✅ Order All Selected Items
+    </button>
+  </div>
+
+  <div class="back-link">
+    {% if user_logged_in %}
+      <a href="/orders">📦 View Orders</a>
+    {% else %}
+      <a href="/login" onclick="alert('⚠️ Please log in to view orders.')">📦 View Orders</a>
+    {% endif %}
+  </div>
+
+  <div class="back-link">
+    <a href="/">🏠 Back to Home</a>
+  </div>
+</main>
+
+
+<script>
+  const userLoggedIn = {{ 'true' if user_logged_in else 'false' }};
+</script>
+
+
+<script>
+  const toggle = document.getElementById('toggle-theme');
+  const body = document.body;
+  if (localStorage.getItem('theme') === 'night') {
+    body.classList.replace('day-mode', 'night-mode');
+    toggle.checked = true;
+  }
+  toggle.addEventListener('change', () => {
+    body.classList.toggle('night-mode');
+    body.classList.toggle('day-mode');
+    localStorage.setItem('theme', body.classList.contains('night-mode') ? 'night' : 'day');
+  });
+
+  function showPage(id) {
+    document.getElementById('page1').style.display = 'none';
+    document.getElementById('page2').style.display = 'none';
+    document.getElementById(id).style.display = 'block';
+  }
+
+  const quantities = {};
+
+  function incrementQty(item) {
+    if (!quantities[item]) quantities[item] = 0;
+    quantities[item]++;
+    document.getElementById(`qty-${item}`).innerText = quantities[item];
+  }
+
+  function decrementQty(item) {
+    if (!quantities[item]) quantities[item] = 0;
+    if (quantities[item] > 0) quantities[item]--;
+    document.getElementById(`qty-${item}`).innerText = quantities[item];
+  }
+
+  function placeAllOrders() {
+    if (!userLoggedIn) {
+      alert("⚠️ Please login or register to place an order.");
+      return window.location.href = "/login";
+    }
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/bulk_order';
+
+    let hasItems = false;
+
+    for (const item in quantities) {
+      const qty = quantities[item];
+      if (qty > 0) {
+        hasItems = true;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'items';
+        input.value = `${item}:${qty}`;
+        form.appendChild(input);
+      }
+    }
+
+    if (!hasItems) {
+      alert("No items selected.");
+      return;
+    }
+
+    document.body.appendChild(form);
+    alert("✅ Your food has been ordered!");
+    form.submit();
+  }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

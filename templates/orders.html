@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders - Neon Food Express</title>
+
+   
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .pamphlet-widget {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        body.night-mode .pamphlet-widget {
+            background: #1c1c1c;
+            color: #fff;
+            box-shadow: 0 0 15px #00ffe0;
+        }
+
+        .neon-title {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f39c12;
+        }
+
+        body.night-mode .neon-title {
+            color: #00ffe0;
+            text-shadow: 0 0 6px #00ffe0, 0 0 12px #00ffe0;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 16px;
+            font-size: 18px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        body.night-mode li {
+            border-bottom: 1px solid #444;
+        }
+
+        .neon-link {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+            text-decoration: none;
+            color: #f39c12;
+        }
+
+        body.night-mode .neon-link {
+            color: #00ffe0;
+        }
+
+        strong {
+            color: #e67e22;
+        }
+
+        body.night-mode strong {
+            color: #ffd180;
+        }
+    </style>
+</head>
+
+<body class="day-mode">
+
+    <div class="pamphlet-widget">
+        <h1 class="neon-title">Orders List</h1>
+
+        <ul>
+            {% for item, qty, price in orders %}
+                <li>
+                    {{ item }} — Qty: {{ qty }} × ${{ '%.2f'|format(price) }}
+                    = <strong>${{ '%.2f'|format(price * qty) }}</strong>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a class="neon-link" href="/">⬅ Back to Home</a>
+    </div>
+
+    <script>
+        const body = document.body;
+        const theme = localStorage.getItem('theme');
+        if (theme === 'night') {
+            body.classList.replace('day-mode', 'night-mode');
+        } else {
+            body.classList.replace('night-mode', 'day-mode');
+        }
+    </script>
+
+</body>
+</html>
+
+

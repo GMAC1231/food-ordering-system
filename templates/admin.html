@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - Manage Menu</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .admin-form input,
+        .admin-form select,
+        .admin-form textarea,
+        .admin-form button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .admin-form button {
+            background: #ff6600;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .emoji-group label {
+            display: inline-block;
+            margin-right: 12px;
+            margin-top: 6px;
+            cursor: pointer;
+        }
+
+        .menu-list {
+            margin-top: 30px;
+        }
+
+        .menu-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .menu-item small {
+            display: block;
+            color: gray;
+        }
+
+        .menu-item a {
+            color: red;
+            margin-left: 10px;
+            text-decoration: none;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .success-message {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="day-mode">
+<main class="admin-container">
+    <h1 class="neon-title">🍽️ Admin Panel - Manage Menu</h1>
+
+    {% if message %}
+    <div class="success-message">{{ message }}</div>
+    {% endif %}
+
+    
+    <form method="POST" action="/admin" class="admin-form">
+        <input type="text" name="new_item" placeholder="Food Name (e.g. Burger)" required>
+
+        <label><strong>Select Emoji:</strong></label>
+        <div id="emoji-options">
+            <div class="emoji-group" id="regular-emojis">
+                <label><input type="radio" name="emoji" value="🍔"> 🍔 Burger</label>
+                <label><input type="radio" name="emoji" value="🍕"> 🍕 Pizza</label>
+                <label><input type="radio" name="emoji" value="🍟"> 🍟 Fries</label>
+                <label><input type="radio" name="emoji" value="🥪"> 🥪 Sandwich</label>
+                <label><input type="radio" name="emoji" value="🥤"> 🥤 Drink</label>
+                <label><input type="radio" name="emoji" value="🍝"> 🍝 Pasta</label>
+                <label><input type="radio" name="emoji" value="🌮"> 🌮 Tacos</label>
+                <label><input type="radio" name="emoji" value="🥗"> 🥗 Salad</label>
+                <label><input type="radio" name="emoji" value="🍣"> 🍣 Sushi</label>
+                <label><input type="radio" name="emoji" value="🍗"> 🍗 Chicken</label>
+            </div>
+
+            <div class="emoji-group" id="combo-emojis" style="display: none;">
+                <label><input type="radio" name="emoji" value="🍔🍟🥤"> 🍔🍟🥤 Combo</label>
+                <label><input type="radio" name="emoji" value="🔥"> 🔥 Special</label>
+                <label><input type="radio" name="emoji" value="🥳"> 🥳 Party Combo</label>
+                <label><input type="radio" name="emoji" value="🍽️"> 🍽️ Full Meal</label>
+            </div>
+
+            <div class="emoji-group" id="dessert-emojis" style="display: none;">
+                <label><input type="radio" name="emoji" value="🍩"> 🍩 Donut</label>
+                <label><input type="radio" name="emoji" value="🍰"> 🍰 Cake</label>
+                <label><input type="radio" name="emoji" value="🍦"> 🍦 Ice Cream</label>
+                <label><input type="radio" name="emoji" value="🧁"> 🧁 Cupcake</label>
+                <label><input type="radio" name="emoji" value="🍫"> 🍫 Chocolate</label>
+                <label><input type="radio" name="emoji" value="🥧"> 🥧 Pie</label>
+            </div>
+
+            <div class="emoji-group" id="dessert-combo-emojis" style="display: none;">
+                <label><input type="radio" name="emoji" value="🍨🍫🍰"> 🍨🍫🍰 Sweet Set</label>
+                <label><input type="radio" name="emoji" value="🧁🍩🍦"> 🧁🍩🍦 Chill Trio</label>
+                <label><input type="radio" name="emoji" value="🍮🥧🍫"> 🍮🥧🍫 Creamy Combo</label>
+            </div>
+        </div>
+
+        <input type="number" step="0.01" name="price" placeholder="Price (e.g. 9.99)" required>
+
+        <div id="description-field">
+            <textarea name="description" placeholder="Description (e.g. Served with fries 🍟)" rows="2"></textarea>
+        </div>
+
+        <select name="category" id="category-select" required>
+            <option value="regular">Regular</option>
+            <option value="combo">Combo</option>
+            <option value="dessert">Dessert</option>
+            <option value="dessert-combo">Dessert Combo</option>
+        </select>
+
+        <input type="number" name="position" placeholder="Position (e.g. 1)" min="0" required>
+        <button type="submit">➕ Add Menu Item</button>
+    </form>
+
+    
+    <div class="menu-list">
+        <h2>📋 Current Menu</h2>
+        {% for id, item, category, price, desc, pos, emoji in menu_items %}
+            <div class="menu-item">
+                <strong>{{ emoji }} {{ item }}</strong> - ${{ '%.2f'|format(price) }} <em>({{ category }})</em>
+                {% if category == 'combo' or category == 'dessert-combo' %}
+                    <small>{{ desc }}</small>
+                {% endif %}
+                <small>Position: {{ pos }}</small>
+                <a href="/delete-menu/{{ id }}">❌ Delete</a>
+            </div>
+        {% else %}
+            <p>No menu items yet.</p>
+        {% endfor %}
+    </div>
+</main>
+
+<script>
+    const categorySelect = document.getElementById('category-select');
+    const regularEmojis = document.getElementById('regular-emojis');
+    const comboEmojis = document.getElementById('combo-emojis');
+    const dessertEmojis = document.getElementById('dessert-emojis');
+    const dessertComboEmojis = document.getElementById('dessert-combo-emojis');
+    const descriptionField = document.getElementById('description-field');
+
+    function toggleFields() {
+        regularEmojis.style.display = 'none';
+        comboEmojis.style.display = 'none';
+        dessertEmojis.style.display = 'none';
+        dessertComboEmojis.style.display = 'none';
+
+        const value = categorySelect.value;
+
+        if (value === 'regular') {
+            regularEmojis.style.display = 'block';
+            descriptionField.style.display = 'none';
+        } else if (value === 'combo') {
+            comboEmojis.style.display = 'block';
+            descriptionField.style.display = 'block';
+        } else if (value === 'dessert') {
+            dessertEmojis.style.display = 'block';
+            descriptionField.style.display = 'none';
+        } else if (value === 'dessert-combo') {
+            dessertComboEmojis.style.display = 'block';
+            descriptionField.style.display = 'block';
+        }
+    }
+
+    categorySelect.addEventListener('change', toggleFields);
+    window.addEventListener('load', toggleFields);
+</script>
+</body>
+</html>
+
+
+
+
