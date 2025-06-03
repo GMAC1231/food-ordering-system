@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Verification Sent</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fffaf0;
+      color: #333;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: inline-block;
+      padding: 30px;
+      max-width: 500px;
+    }
+    h2 {
+      color: #ff9800;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 16px;
+    }
+    .highlight {
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎉 Thank You for Signing Up, {{ username }}!</h2>
+    <p>We’ve sent a verification email to:</p>
+    <p class="highlight">{{ email }}</p>
+    <p>Please check your inbox and click the verification link to activate your account.</p>
+  </div>
+</body>
+</html>

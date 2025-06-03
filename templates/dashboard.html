@@ -6,11 +6,34 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="/static/style.css">
   <style>
+    /* 🔸 Navbar styling */
+    .navbar {
+      background: #ff9800;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .navbar a {
+      color: red;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    /* 🔸 Dashboard styling */
     .dashboard-container {
       max-width: 900px;
-      margin: auto;
+      margin: 20px auto;
       padding: 20px;
-      font-family: 'Orbitron', sans-serif;
+      font-family: Arial, sans-serif;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     h1 {
       text-align: center;
@@ -31,6 +54,8 @@
     }
     canvas {
       max-width: 100%;
+      display: block;
+      margin: 30px auto;
     }
     table {
       width: 100%;
@@ -49,6 +74,14 @@
   </style>
 </head>
 <body>
+
+  <!-- 🔴 Navbar -->
+  <nav class="navbar">
+    <a href="/admin">Admin Menu</a>
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <!-- 🔴 Admin Dashboard -->
   <main class="dashboard-container">
     <h1>📊 Admin Dashboard</h1>
 
@@ -68,7 +101,7 @@
     </div>
 
     <h2 style="text-align:center">Order Distribution</h2>
-    <canvas id="orderChart"></canvas>
+    <canvas id="orderChart" width="400" height="400"></canvas>
 
     <h2 style="text-align:center">Recent Orders</h2>
     <table>
@@ -77,11 +110,11 @@
         <th>Item</th>
         <th>Qty</th>
       </tr>
-      {% for order in recent_orders %}
+      {% for username, item, qty in recent_orders %}
       <tr>
-        <td>{{ order.username }}</td>
-        <td>{{ order.food_item }}</td>
-        <td>{{ order.quantity }}</td>
+        <td>{{ username }}</td>
+        <td>{{ item }}</td>
+        <td>{{ qty }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -89,19 +122,29 @@
 
   <script>
     const ctx = document.getElementById('orderChart').getContext('2d');
-    const chart = new Chart(ctx, {
+    const orderChart = new Chart(ctx, {
       type: 'pie',
       data: {
-        labels: {{ chart_labels | safe }},
+        labels: {{ chart_labels|tojson }},
         datasets: [{
           label: 'Orders by Item',
-          data: {{ chart_data | safe }},
+          data: {{ chart_values|tojson }},
           backgroundColor: [
             '#ff9800', '#f06292', '#4dd0e1', '#9575cd', '#81c784', '#ffd54f'
           ]
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
       }
     });
   </script>
 </body>
 </html>
+
+

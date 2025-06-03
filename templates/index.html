@@ -146,62 +146,66 @@
 
   <div id="page1">
     <h2 style="color:#ff9800;">🍔 Regular Items</h2>
-    {% for item, price, desc, emoji in food_items %}
-    <section class="combo-card">
-      <h2>{{ emoji }} {{ item }}</h2>
-      <p>{{ desc }}</p>
-      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
-      <div class="order-controls">
-        <button onclick="decrementQty('{{ item }}')">➖</button>
-        <span id="qty-{{ item }}">0</span>
-        <button onclick="incrementQty('{{ item }}')">➕</button>
-      </div>
-    </section>
-    {% endfor %}
+    {% for food in food_items %}
+<section class="combo-card">
+  <h2>{{ food.emoji }} {{ food.food_item }}</h2>
+  <p>{{ food.description }}</p>
+  <p><strong>${{ '%.2f'|format(food.price) }}</strong></p>
+  <div class="order-controls">
+    <button onclick="decrementQty('{{ food.food_item }}')">➖</button>
+    <span id="qty-{{ food.food_item }}">0</span>
+    <button onclick="incrementQty('{{ food.food_item }}')">➕</button>
+  </div>
+</section>
+{% endfor %}
+
 
     <h2 style="color:#d81b60;">🍰 Sweet Treats</h2>
-    {% for item, price, desc, emoji in dessert_items %}
-    <section class="dessert-card">
-      <h2>{{ emoji }} {{ item }}</h2>
-      <p>{{ desc }}</p>
-      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
-      <div class="order-controls">
-        <button onclick="decrementQty('{{ item }}')">➖</button>
-        <span id="qty-{{ item }}">0</span>
-        <button onclick="incrementQty('{{ item }}')">➕</button>
-      </div>
-    </section>
-    {% endfor %}
+   {% for food in dessert_items %}
+<section class="dessert-card">
+  <h2>{{ food.emoji }} {{ food.food_item }}</h2>
+  <p>{{ food.description }}</p>
+  <p><strong>${{ '%.2f'|format(food.price) }}</strong></p>
+  <div class="order-controls">
+    <button onclick="decrementQty('{{ food.food_item }}')">➖</button>
+    <span id="qty-{{ food.food_item }}">0</span>
+    <button onclick="incrementQty('{{ food.food_item }}')">➕</button>
+  </div>
+</section>
+{% endfor %}
+
   </div>
 
   <div id="page2" style="display:none;">
     <h2 style="color:#f39c12;">🔥 Meal Combos</h2>
-    {% for item, price, desc, emoji in combo_items %}
-    <section class="combo-card">
-      <h2>{{ emoji }} {{ item }}</h2>
-      <p>{{ desc }}</p>
-      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
-      <div class="order-controls">
-        <button onclick="decrementQty('{{ item }}')">➖</button>
-        <span id="qty-{{ item }}">0</span>
-        <button onclick="incrementQty('{{ item }}')">➕</button>
-      </div>
-    </section>
-    {% endfor %}
+    {% for food in combo_items %}
+<section class="combo-card">
+  <h2>{{ food.emoji }} {{ food.food_item }}</h2>
+  <p>{{ food.description }}</p>
+  <p><strong>${{ '%.2f'|format(food.price) }}</strong></p>
+  <div class="order-controls">
+    <button onclick="decrementQty('{{ food.food_item }}')">➖</button>
+    <span id="qty-{{ food.food_item }}">0</span>
+    <button onclick="incrementQty('{{ food.food_item }}')">➕</button>
+  </div>
+</section>
+{% endfor %}
+
 
     <h2 style="color:#c2185b;">🍨 Dessert Combos</h2>
-    {% for item, price, desc, emoji in dessert_combos %}
-    <section class="dessert-card">
-      <h2>{{ emoji }} {{ item }}</h2>
-      <p>{{ desc }}</p>
-      <p><strong>${{ '%.2f'|format(price) }}</strong></p>
-      <div class="order-controls">
-        <button onclick="decrementQty('{{ item }}')">➖</button>
-        <span id="qty-{{ item }}">0</span>
-        <button onclick="incrementQty('{{ item }}')">➕</button>
-      </div>
-    </section>
-    {% endfor %}
+    {% for food in dessert_combos %}
+<section class="dessert-card">
+  <h2>{{ food.emoji }} {{ food.food_item }}</h2>
+  <p>{{ food.description }}</p>
+  <p><strong>${{ '%.2f'|format(food.price) }}</strong></p>
+  <div class="order-controls">
+    <button onclick="decrementQty('{{ food.food_item }}')">➖</button>
+    <span id="qty-{{ food.food_item }}">0</span>
+    <button onclick="incrementQty('{{ food.food_item }}')">➕</button>
+  </div>
+</section>
+{% endfor %}
+
   </div>
 
   <div style="text-align:center; margin-top: 30px;">
