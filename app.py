@@ -23,7 +23,6 @@ db = SQLAlchemy(app)
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
 
-
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,7 +31,6 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
-
 
 class Menu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,13 +41,11 @@ class Menu(db.Model):
     position = db.Column(db.Integer)
     emoji = db.Column(db.String(50))
 
-
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     food_item = db.Column(db.String(255), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     username = db.Column(db.String(255), nullable=False)
-
 
 # Admin-only decorator
 def admin_required(f):
@@ -60,12 +56,10 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
-
 # Routes
 @app.route('/')
 def home():
     return render_template('home.html', user_logged_in=session.get('user_logged_in'), username=session.get('username'))
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -91,7 +85,6 @@ def signup():
 
     return render_template('signup.html', user_logged_in=session.get('user_logged_in'), username=session.get('username'))
 
-
 @app.route('/verify-email/<token>')
 def verify_email(token):
     try:
@@ -104,9 +97,7 @@ def verify_email(token):
         user.is_verified = True
         db.session.commit()
         return render_template('verification_result.html', status='success', message='Your email has been successfully verified! You can now login.')
-
     return render_template('verification_result.html', status='error', message='User not found. Please sign up again.')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -125,18 +116,15 @@ def login():
             session['user_logged_in'] = True
             session['username'] = user.username
             session['is_admin'] = user.is_admin
-
             return redirect(url_for('dashboard' if user.is_admin else 'home'))
         return "Invalid credentials. Please try again."
 
     return render_template('login.html', user_logged_in=session.get('user_logged_in'), username=session.get('username'))
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('home'))
-
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -154,7 +142,6 @@ def forgot_password():
             return render_template('password_reset_sent.html', email=email, username=user.username)
         return render_template('password_reset_sent.html', email=email, username=None, error=True)
     return render_template('forgot_password.html')
-
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -174,7 +161,6 @@ def reset_password(token):
         return render_template('reset_password_error.html', message="User not found.")
     return render_template('reset_password.html')
 
-
 @app.route('/dashboard')
 @admin_required
 def dashboard():
@@ -187,7 +173,6 @@ def dashboard():
     chart_labels = [row.food_item for row in chart_data]
     chart_values = [row.total for row in chart_data]
     return render_template('dashboard.html', user_logged_in=True, username=session.get('username'), total_users=total_users, total_orders=total_orders, top_item=top_item, recent_orders=recent_orders, chart_labels=chart_labels, chart_values=chart_values)
-
 
 @app.route('/admin', methods=['GET', 'POST'])
 @admin_required
@@ -207,7 +192,6 @@ def admin():
     menu_items = Menu.query.order_by(Menu.category, Menu.position).all()
     return render_template('admin.html', menu_items=menu_items, message=message, user_logged_in=session.get('user_logged_in'), username=session.get('username'))
 
-
 @app.route('/delete-menu/<int:menu_id>', methods=['POST', 'GET'])
 @admin_required
 def delete_menu(menu_id):
@@ -215,16 +199,13 @@ def delete_menu(menu_id):
     db.session.commit()
     return redirect(url_for('admin'))
 
-
 @app.route('/about')
 def about():
     return render_template('about.html', user_logged_in=session.get('user_logged_in'), username=session.get('username'))
 
-
 @app.route('/contact')
 def contact():
     return render_template('contact.html', user_logged_in=session.get('user_logged_in'), username=session.get('username'))
-
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -246,19 +227,15 @@ def index():
 def bulk_order():
     if not session.get('user_logged_in'):
         return redirect(url_for('login'))
-
     items = request.form.getlist('items')
     username = session.get('username')
-
     for item in items:
         try:
             name, qty = item.split(':')
             new_order = Order(food_item=name.strip(), quantity=int(qty), username=username)
             db.session.add(new_order)
         except ValueError:
-            # Skip any malformed data
             continue
-
     db.session.commit()
     return redirect(url_for('thankyou', ordered='yes'))
 
@@ -269,18 +246,22 @@ def orders():
     orders = db.session.query(Order.food_item, Order.quantity, Menu.price).join(Menu, Order.food_item == Menu.food_item).filter(Order.username == session.get('username')).all()
     return render_template('orders.html', orders=orders, user_logged_in=True, username=session.get('username'))
 
-
 @app.route('/thankyou')
 def thankyou():
     return render_template('thankyou.html', user_logged_in=session.get('user_logged_in'), username=session.get('username'))
 
-
+# Create tables & admin user once on start
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username='admin').first():
         admin_user = User(username='admin', email='admin@neonfood.com', password='admin123', is_verified=True, is_admin=True)
         db.session.add(admin_user)
         db.session.commit()
+
+# Local dev server (not needed for Render/Heroku)
+if __name__ == '__main__':
+    app.run(debug=True, port=5090)
+
 
 
 
