@@ -9,8 +9,14 @@ app = Flask(__name__)
 app.secret_key = 'Jack1234@12'
 
 # PostgreSQL DB config
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'DATABASE_URL',
+    'postgresql://postgresql:12345@host:5432/orders_db'
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from dotenv import load_dotenv  # Load local .env for development
+load_dotenv()
+app.secret_key = os.getenv('SECRET_KEY', 'fallback_secret_key')
 
 # Flask-Mail config
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
