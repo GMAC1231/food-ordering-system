@@ -10,8 +10,7 @@ app.secret_key = 'Jack1234@12'
 
 # PostgreSQL DB config
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL',
-    'postgresql://postgresql:12345@host:5432/orders_db'
+    'DATABASE_URL'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 from dotenv import load_dotenv  # Load local .env for development
